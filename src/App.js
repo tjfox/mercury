@@ -88,7 +88,8 @@ class App extends Component {
 
     console.log(results);
     // var arrayLength = results.length;
-    if (results[0].data[{"First Name" : "Carl"}] === results[1].data[{"First Name" : "Carl"}]){
+
+    if (results.data[0]['First Name'] === results.data[1]['First Name']){
         return "The First two rows have the same first name";
     }
 
