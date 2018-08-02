@@ -23,7 +23,7 @@ class App extends Component {
   parseJavascript = () => {
     let csv = "LeadID,OwnerID,Owner Name,Date Added,Lead Type,Source,First Name,Last Name,Company,Email,Address,Address 2,City,State,Zip,Lat,Lng,Phone,Cell,Status,Birth Date,Notes,External Id,County,Referrer,Plan Type,Insurance Carrier,Premium,Plan Type Spouse,Insurance Carrier Spouse,Premium Spouse,Spouse,Spouse Dob,Policy Status 1,Policy Source Submitted Id 1,Policy Source Issued Id 1,Policy Status 2,Policy Source Submitted Id 2,Policy Source Issued Id 2,Policy Status 3,Policy Source Submitted Id 3,Policy Source Issued Id 3,Policy Status 4,Policy Source Submitted Id 4,Policy Source Issued Id 4,Policy Status 5,Policy Source Submitted Id 5,Policy Source Issued Id 5,Policy Status 6,Policy Source Submitted Id 6,Policy Source Issued Id 6,Policy Status 7,Policy Source Submitted Id 7,Policy Source Issued Id 7,Policy Status 8,Policy Source Submitted Id 8,Policy Source Issued Id 8,Policy Status 9,Policy Source Submitted Id 9,Policy Source Issued Id 9,Policy Status 10,Policy Source Submitted Id 10,Policy Source Issued Id 10\n" +
         "H2140404,H2494,Scott Keup,10/2/17 11:40,Imported,General List,Carl,Ott,,,34449 County Road 29,,Mountain Lake,MN,56159,43.939276,-94.924319,5074272318,,Prospect,4/1/34,,,Cottonwood,,,,,,,,,0000-00-00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n" +
-        "H2175309,H2494,Scott Keup,10/2/17 11:40,Imported,General List,Carl,Alfveby,,,2700 Oxford St N,,Saint Paul,MN,55113,45.022039,-93.143166,6514829952,,Prospect,5/1/34,,,Ramsey,,,,,,,,,0000-00-00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n" +
+        "H2175309,H2494,Scott Keup,10/2/17 11:40,Imported,General List,Carl,Ott,,,34449 County Road 29,,Saint Paul,MN,55113,45.022039,-93.143166,6514829952,,Prospect,5/1/34,,,Ramsey,,,,,,,,,0000-00-00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n" +
         "H2160507,H2494,Scott Keup,10/2/17 11:40,Imported,General List,Moisey,Melamed,,,1350 Nicollet Mall Apt 1700,,Minneapolis,MN,55403,44.969326,-93.27859,6128726542,,Prospect,6/1/34,,,Hennepin,,,,,,,,,0000-00-00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n" +
         "H2160506,H2494,Scott Keup,10/2/17 11:40,Imported,General List,Nellie,Melamed,,,1350 Nicollet Mall,,Minneapolis,MN,55403,44.969326,-93.27859,6128726542,,Prospect,7/1/34,,,Hennepin,,,,,,,,,0000-00-00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n" +
         "H2156301,H2494,Scott Keup,10/2/17 11:40,Imported,General List,Verna,Quale,,,2240 Longhorn Ln,,Buffalo,MN,55313,45.143163,-93.86923,7639723200,,Prospect,4/1/36,,,Wright,,,,,,,,,0000-00-00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n" +
@@ -83,20 +83,66 @@ class App extends Component {
         withCredentials: undefined,
         transform: undefined
     });
+    var count = 1;
 
+    var arrLength = results.data.length;
+    var outputList = new Array();
+    outputList.push(results.data[0]);
+      //start at first row of contact - set name = last name ...
+      //make new list out of rows that have same last name
+      //sift through list -- check first name
+      //if equal then check address
+      //if equal then append to output list and set two contacts to null
+      //when appending, if one row has data in position that other row doesn;t then append that
+      //if not equal then append first one, set row to null and continue through original contact list
+
+    for(var i = 0; i < arrLength; i++) {
+        if(results.data[i] != null){
+            console.log(results.data[i])
+            var observedLastName = results.data[i]['Last Name'];
+            var matchList = results.data.filter(row => results.data[i]['Last Name'] === row['Last Name']); //builds array of matching first names
+            var listLength = matchList.length;
+
+            for (var j = 0; j < listLength - 1; j++) {
+
+                let currentFirst = matchList[0]['First Name'];
+                let observedFirst = matchList[j]['First Name'];
+
+                if (currentFirst.length && observedFirst.length > 2 && ((currentFirst.charAt(0) && currentFirst.charAt(1) && currentFirst.charAt(2)) === (observedFirst.charAt(0) && observedFirst.charAt(1) && observedFirst.charAt(2)))) {
+
+                    let currentAddress = matchList[0]['Address'];
+                    let observedAddress = matchList[j]['Address'];
+
+                    if (currentAddress.length > 7 && observedAddress.length > 7 && ((currentAddress.charAt(0) && currentAddress.charAt(1) && currentAddress.charAt(2) && currentAddress.charAt(3) && currentAddress.charAt(4) && currentAddress.charAt(5) && currentAddress.charAt(6)) && (observedAddress.charAt(0) && observedAddress.charAt(1) && observedAddress.charAt(2) && observedAddress.charAt(3) && observedAddress.charAt(4) && observedAddress.charAt(5) && observedAddress.charAt(6)))) {
+
+                        outputList.push(matchList[0]);
+                        let index = results.data.indexOf(matchList[j]);
+                        results.data[i] = null;
+                        results.data[index] = null;
+                        continue;
+                    }
+
+                }
+            }
+
+            console.log(outputList);
+            console.log(matchList);
+            console.log(observedLastName)
+        }
+    }
 
 
     console.log(results);
     // var arrayLength = results.length;
 
-    if (results.data[0]['First Name'] === results.data[1]['First Name']){
-        return "The First two rows have the same first name";
-    }
-
-    //Think I have a good outline for how algorithm should behave, just need to be able to access elements in result array
-
-    //return (<p>{results.data}</p>);
-    else return "Hello, World"
+    // if (results.data[0]['First Name'] === results.data[1]['First Name']){
+    //     return "The First two rows have the same first name";
+    // }
+    //
+    // //Think I have a good outline for how algorithm should behave, just need to be able to access elements in result array
+    //
+    // //return (<p>{results.data}</p>);
+    // else return "Hello, World"
   };
 }
 
