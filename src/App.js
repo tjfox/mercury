@@ -60,7 +60,7 @@ class App extends Component {
     //     transform: undefined
     // };
 
-    let results = Papa.parse(csv, {
+    var results = Papa.parse(csv, {
         delimiter: "",	// auto-detect
         newline: "",	// auto-detect
         quoteChar: '"',
@@ -87,7 +87,7 @@ class App extends Component {
 
     var arrLength = results.data.length;
     var outputList = new Array();
-    outputList.push(results.data[0]);
+    //outputList.push(results.data[0]);
       //start at first row of contact - set name = last name ...
       //make new list out of rows that have same last name
       //sift through list -- check first name
@@ -97,8 +97,11 @@ class App extends Component {
       //if not equal then append first one, set row to null and continue through original contact list
 
     for(var i = 0; i < arrLength; i++) {
+        console.log(" the value of i is: " + i);
+        console.log(results.data);
+        if(results.data[i].length > 0) console.log(results.data[i]);
         if(results.data[i] != null){
-            console.log(results.data[i])
+            //console.log(results.data[i])
             var observedLastName = results.data[i]['Last Name'];
             var matchList = results.data.filter(row => results.data[i]['Last Name'] === row['Last Name']); //builds array of matching first names
             var listLength = matchList.length;
@@ -116,21 +119,22 @@ class App extends Component {
                     if (currentAddress.length > 7 && observedAddress.length > 7 && ((currentAddress.charAt(0) && currentAddress.charAt(1) && currentAddress.charAt(2) && currentAddress.charAt(3) && currentAddress.charAt(4) && currentAddress.charAt(5) && currentAddress.charAt(6)) && (observedAddress.charAt(0) && observedAddress.charAt(1) && observedAddress.charAt(2) && observedAddress.charAt(3) && observedAddress.charAt(4) && observedAddress.charAt(5) && observedAddress.charAt(6)))) {
 
                         outputList.push(matchList[0]);
-                        let index = results.data.indexOf(matchList[j]);
-                        results.data[i] = null;
-                        results.data[index] = null;
-                        continue;
+                        let index = results.data.indexOf(matchList[j][{'First Name' : observedFirst, 'Address' : observedAddress}] );
+                        console.log("The value of the index is:" + index);
+                        // results.data[i] = null;
+                        // results.data[i] = new Array();
+                        break;
+                        //results.data[index] = new Array();
                     }
 
                 }
             }
-
+            console.log(observedLastName);
             console.log(outputList);
             console.log(matchList);
-            console.log(observedLastName)
+            console.log(results.data);
         }
     }
-
 
     console.log(results);
     // var arrayLength = results.length;
