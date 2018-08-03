@@ -20,6 +20,40 @@ class App extends Component {
   }
 
 
+  findMatchesByName = (data) => {
+    let leftToMatch = [...data];
+    let matches = [];
+
+    function nameMatch(row, idx, arr) {
+      return row['First Name'] === arr[0]['First Name'] &&
+      row['Last Name'] === arr[0]['Last Name']
+    }
+
+    function nameFilter(row, idx, arr) {
+      return !nameMatch(row, idx, arr)
+    }
+
+    while(leftToMatch.length) {
+      matches = [...matches, leftToMatch.filter(nameMatch)];
+      leftToMatch = [...leftToMatch.filter(nameFilter)];
+    }
+
+    console.log('Matches')
+    console.log(matches)
+  }
+
+  findMatchesById = (data) => {
+    function buildUniqueId(clientData) {
+      return clientData["First Name"] + " " + clientData["Last Name"] + " " + clientData["Address"]
+    }
+
+    let uniqueIds = [...new Set(data.map(buildUniqueId))]
+    console.log('Unique Clients')
+    console.log(uniqueIds)
+    let matches = uniqueIds.map(name => data.filter(clientData => name === buildUniqueId(clientData)))
+    console.log(matches);
+  }
+  
   parseJavascript = () => {
     let csv = "LeadID,OwnerID,Owner Name,Date Added,Lead Type,Source,First Name,Last Name,Company,Email,Address,Address 2,City,State,Zip,Lat,Lng,Phone,Cell,Status,Birth Date,Notes,External Id,County,Referrer,Plan Type,Insurance Carrier,Premium,Plan Type Spouse,Insurance Carrier Spouse,Premium Spouse,Spouse,Spouse Dob,Policy Status 1,Policy Source Submitted Id 1,Policy Source Issued Id 1,Policy Status 2,Policy Source Submitted Id 2,Policy Source Issued Id 2,Policy Status 3,Policy Source Submitted Id 3,Policy Source Issued Id 3,Policy Status 4,Policy Source Submitted Id 4,Policy Source Issued Id 4,Policy Status 5,Policy Source Submitted Id 5,Policy Source Issued Id 5,Policy Status 6,Policy Source Submitted Id 6,Policy Source Issued Id 6,Policy Status 7,Policy Source Submitted Id 7,Policy Source Issued Id 7,Policy Status 8,Policy Source Submitted Id 8,Policy Source Issued Id 8,Policy Status 9,Policy Source Submitted Id 9,Policy Source Issued Id 9,Policy Status 10,Policy Source Submitted Id 10,Policy Source Issued Id 10\n" +
         "H2140404,H2494,Scott Keup,10/2/17 11:40,Imported,General List,Carl,Ott,,,34449 County Road 29,,Mountain Lake,MN,56159,43.939276,-94.924319,5074272318,,Prospect,4/1/34,,,Cottonwood,,,,,,,,,0000-00-00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n" +
@@ -83,6 +117,13 @@ class App extends Component {
         withCredentials: undefined,
         transform: undefined
     });
+
+
+    
+    this.findMatchesByName(results.data);
+    this.findMatchesById(results.data);
+
+    
     var count = 1;
 
     var arrLength = results.data.length;
